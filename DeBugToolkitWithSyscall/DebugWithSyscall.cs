@@ -12,23 +12,35 @@ namespace DeBugToolkitWithSyscall
 
         static void Main(string[] args)
         {
+            string path1 = @"D:\Neo\test2.txt";
+            string[] script1 = File.ReadAllLines(path1, System.Text.Encoding.Default);
+            byte[] tempScript = new byte[(script1[0].Length * (script1.Length - 1))/2 + (script1[script1.Length - 1].Length)/2];
+            for (int i = 0; i < script1.Length; i++)
+            {
+                byte[] output = ToByte.HexStringToByteArray(script1[i]);
+                for (int j = 0; j < output.Length; j++)
+                {
+                    tempScript[script1[0].Length * i + j] = output[j];
+                }
+            }
+            Script returnScript = tempScript;
 
             Console.WriteLine("DebugToolkit Started");
-            string path = @"D:\Neo\test.txt";
-            string[] script = File.ReadAllLines(path, System.Text.Encoding.Default);
-            byte[] tempScript = new byte[script.Length];
-            Script returnScript;
-            for(int i = 0; i < script.Length; i++)
-            {
-                tempScript[i]= (byte)Enum.Parse(typeof(OpCode), script[i]);
-            }
-            returnScript = tempScript;
+            //string path = @"D:\Neo\test1.txt";
+            //string[] script = File.ReadAllLines(path, System.Text.Encoding.Default);
+            //byte[] tempScript = new byte[script.Length];
+            //Script returnScript;
+            //for (int i = 0; i < script.Length; i++)
+            //{
+            //    tempScript[i] = (byte)Enum.Parse(typeof(OpCode), script[i]);
+            //}
+            //returnScript = tempScript;
 
             NeoSystem TheNeoSystem;
             TheNeoSystem = new NeoSystem(ProtocolSettings.Default, null, null);
             var snapshot = TheNeoSystem.GetSnapshot().CreateSnapshot();
             ApplicationEngine engine = ApplicationEngine.Run(returnScript,snapshot);
-            Console.WriteLine("state:"+engine.State);
+            Console.WriteLine("State:"+engine.State);
             Console.WriteLine("GasConsumed:"+engine.GasConsumed);
             Console.WriteLine("---------------");
 
